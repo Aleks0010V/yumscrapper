@@ -13,23 +13,17 @@ class Title():
         genres = list()
         html = get(link, headers=h)
         print(html.status_code)
-        try:
-            html = BeautifulSoup(html.text, 'html.parser')
-            title = html.select('h1')[0].text.strip()
-            html = html.find_all('ul', class_="categories-list")[0]
-            for tag in html.select('a'):
-                genres.append(tag.text)
-        except:
-            title, genres = [f'{html.status_code}'] * 2
+        html = BeautifulSoup(html.text, 'html.parser')
+        title = html.select('h1')[0].text.strip()
+        html = html.find_all('ul', class_="categories-list")[0]
+        for tag in html.select('a'):
+            genres.append(tag.text)
         return (title, genres)
 
     def __init__(self, link):
         self.link = link
         self.title, self.genres = Title.get_info(link)
-        try:
-            self.genres.sort()
-        except:
-            pass
+        self.genres.sort()
 
     def __str__(self):
         return f'{self.link}, {self.title}, {self.genres}'
@@ -53,8 +47,11 @@ def get_links():
 def get_titles(links):
     titles = list()
     for link in links:
-        a = Title(link)
-        titles.append((a.link, a.title, a.genres))
+        try:
+            a = Title(link)
+            titles.append((a.link, a.title, a.genres))
+        except:
+            pass
         time.sleep(0.65)
     return titles
 
